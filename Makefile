@@ -1,7 +1,10 @@
-CC=gcc
 WFLAGS=-Wall -Werror -Wno-unused
 LOCAL_CFLAGS=-O2 -Iinclude -fno-strict-aliasing
 PRGNAME=mping
+
+ifeq ($(CC),)
+	CC = gcc
+endif
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)

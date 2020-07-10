@@ -263,6 +263,7 @@ int run_client()
 static
 int run_server ()
 {
+	int wait_sequence = 0;
 	fd_set master;
 	fd_set read_fds;
 	FD_ZERO(&master);
@@ -397,8 +398,17 @@ int run_server ()
 		timersub(&cur_time, &send_time, &elapsed);
 		if( timercmp(&elapsed, &timeout, >=) )
 		{
-			if (stop_count !=0 && send_sequence >= stop_count)
-				finish(0);
+			if (stop_count !=0 && send_sequence >= stop_count) {
+				if (wait_sequence != 0) {
+					finish(0);
+				} else {
+					gettimeofday(&send_time, NULL);
+					delay.tv_sec=2;
+		                        delay.tv_usec=0;
+					timeout=delay;
+					wait_sequence=1;
+				}
+			}
 
 			memset((char *) &payload, 0, sizeof(struct ping_header));
 			payload.hdr.sequence=htonl(send_sequence);
